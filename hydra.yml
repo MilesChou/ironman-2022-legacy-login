@@ -1,0 +1,8 @@
+log:
+  level: debug
+
+dsn: "mysql://root:secret@tcp(localhost:3306)/hydra?max_conns=20&max_idle_conns=4"
+
+secrets:
+  system:
+    - this-is-the-primary-secret
