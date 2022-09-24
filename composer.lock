@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8aa2c37b75fd192e897104bad53af86c",
+    "content-hash": "fa9c2b724da893822456666a987f3239",
     "packages": [
         {
             "name": "brick/math",
@@ -2442,6 +2442,75 @@
                 }
             ],
             "time": "2022-08-01T11:03:24+00:00"
+        },
+        {
+            "name": "ory/hydra-client",
+            "version": "v1.11.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ory/hydra-client-php.git",
+                "reference": "bd16acaacdb0393ecdc1b41216613c6dccf6647a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ory/hydra-client-php/zipball/bd16acaacdb0393ecdc1b41216613c6dccf6647a",
+                "reference": "bd16acaacdb0393ecdc1b41216613c6dccf6647a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "guzzlehttp/guzzle": "^7.3",
+                "guzzlehttp/psr7": "^1.7 || ^2.0",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.12",
+                "phpunit/phpunit": "^8.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ory\\Hydra\\Client\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Ory GmbH",
+                    "homepage": "https://www.ory.sh"
+                }
+            ],
+            "description": "Documentation for all of Ory Hydra's APIs.",
+            "homepage": "https://github.com/ory/hydra-client-php",
+            "keywords": [
+                "api",
+                "openapi",
+                "openapi-generator",
+                "openapitools",
+                "php",
+                "rest",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/ory/hydra-client-php/issues",
+                "source": "https://github.com/ory/hydra-client-php/tree/v1.11.8"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/ory",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://www.patreon.com/_ory",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2022-05-04T11:13:29+00:00"
         },
         {
             "name": "phpoption/phpoption",

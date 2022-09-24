@@ -14,6 +14,7 @@
 
         <form method="POST" action="{{ route('oauth2.login') }}">
             @csrf
+            <input type="hidden" name="challenge" value="{{ $challenge }}" />
 
             <!-- Email Address -->
             <div>
