@@ -1,7 +1,13 @@
-version: '3'
+version: '2.4'
 
 services:
-  mysqld:
+  healthy:
+    image: busybox
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
     image: mariadb:10.2
     ports:
       - 3306:3306
@@ -9,3 +15,8 @@ services:
       - ./database/schema:/docker-entrypoint-initdb.d
     environment:
       MARIADB_ROOT_PASSWORD: secret
+    healthcheck:
+        test: mysqladmin ping --password=secret
+        interval: 10s
+        timeout: 5s
+        retries: 5
