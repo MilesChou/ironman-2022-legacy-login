@@ -12,22 +12,20 @@
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
-        <form method="POST" action="{{ route('oauth2.consent') }}">
+        <form method="POST" action="{{ route('oauth2.consent.accept') }}">
             @csrf
+            <input type="hidden" name="challenge" value="{{ $challenge }}" />
 
             <!-- Scopes -->
             <div>
                 <x-input-label for="scope" :value="__('Scopes')" />
 
-                <label for="scopes" class="inline-flex items-center">
-                    <input type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="scope[openid]">
-                    <span class="ml-2 text-sm text-gray-600">{{ __('openid') }}</span>
-                </label>
-
-                <label for="email" class="inline-flex items-center">
-                    <input type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="scope[email]">
-                    <span class="ml-2 text-sm text-gray-600">{{ __('email') }}</span>
-                </label>
+                @foreach($scopes as $scope)
+                    <label for="scopes-{{ $scope }}" class="inline-flex items-center">
+                        <input type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" checked name="scopes[{{ $scope }}]">
+                        <span class="ml-2 text-sm text-gray-600">{{ __($scope) }}</span>
+                    </label>
+                @endforeach
             </div>
 
             <!-- Remember Me -->
@@ -41,6 +39,17 @@
             <div class="flex items-center justify-end mt-4">
                 <x-primary-button class="ml-3">
                     {{ __('Consent Permission') }}
+                </x-primary-button>
+            </div>
+        </form>
+
+        <form method="POST" action="{{ route('oauth2.consent.reject') }}">
+            @csrf
+            <input type="hidden" name="challenge" value="{{ $challenge }}" />
+
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ml-3">
+                    {{ __('Reject Permission') }}
                 </x-primary-button>
             </div>
         </form>
