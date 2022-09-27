@@ -27,4 +27,10 @@ php artisan migrate
 php artisan serve
 ```
 
-然後就能在 http://127.0.0.1/ 看到內容了。
+然後就能在 http://127.0.0.1:8000/ 看到內容了。
+
+Hydra 的啟動方法如下：
+
+```
+hydra serve all -c hydra.yml --dangerous-force-http
+```
