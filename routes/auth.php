@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\HydraCallback;
+use App\Http\Controllers\Auth\HydraLogin;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -17,29 +19,8 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', function () {
-        $authorizeUri = 'http://127.0.0.1:4444/oauth2/auth';
-
-        $query = \Illuminate\Support\Arr::query([
-            'client_id' => 'my-rp',
-            'redirect_uri' => 'http://127.0.0.1:8000/callback',
-            'scope' => 'openid',
-            'response_type' => 'code',
-            'state' => '1a2b3c4d',
-        ]);
-
-        $authenticationRequest = $authorizeUri . '?' . $query;
-
-        Log::info('Authentication Request: ' . $authenticationRequest);
-
-        return redirect($authenticationRequest);
-    })->name('login');
-
-    Route::get('callback', function () {
-        dump(request()->all());
-        return response('拿到身分驗證回應了');
-    });
-
+    Route::get('login', HydraLogin::class)->name('login');
+    Route::get('callback', HydraCallback::class)->name('hydra.callback');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
