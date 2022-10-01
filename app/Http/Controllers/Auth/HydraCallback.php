@@ -5,13 +5,22 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Jose\Component\Checker\ClaimCheckerManagerFactory;
+use Jose\Component\Core\JWK;
+use Jose\Component\Signature\JWSLoader;
 use Ory\Hydra\Client\Api\AdminApi;
 use Ory\Hydra\Client\Api\PublicApi;
 
 class HydraCallback
 {
-    public function __invoke(Request $request, PublicApi $hydra, AdminApi $admin)
-    {
+    public function __invoke(
+        Request $request,
+        PublicApi $hydra,
+        AdminApi $admin,
+        JWK $jwk,
+        JWSLoader $loader,
+        ClaimCheckerManagerFactory $claimCheckerManagerFactory,
+    ) {
         $error = $request->input('error');
 
         if (null !== $error) {
@@ -48,6 +57,14 @@ class HydraCallback
         $introspectToken = $admin->introspectOAuth2Token($tokenResponse->getAccessToken());
 
         Log::debug('Token Introspection: ', json_decode((string)$introspectToken, true));
+
+        $idToken = $tokenResponse->getIdToken();
+
+        $jws = $loader->loadAndVerifyWithKey($idToken, $jwk, $signature);
+
+        $claimCheckerManager = $claimCheckerManagerFactory->create(['aud', 'exp', 'iat', 'iss']);
+
+        $claimCheckerManager->check(json_decode($jws->getPayload(), true));
 
         return response('拿到身分驗證回應了');
     }
