@@ -66,6 +66,8 @@ class HydraCallback
 
         $claimCheckerManager->check(json_decode($jws->getPayload(), true));
 
+        $request->session()->put('id_token', $idToken);
+
         return response('拿到身分驗證回應了');
     }
 }

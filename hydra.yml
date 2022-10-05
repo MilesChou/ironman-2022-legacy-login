@@ -1,3 +1,4 @@
+# https://www.ory.sh/docs/hydra/reference/configuration
 log:
   level: debug
 
@@ -13,3 +14,4 @@ urls:
 
   login: http://127.0.0.1:8000/oauth2/login
   consent: http://127.0.0.1:8000/oauth2/consent
+  logout: http://127.0.0.1:8000/oauth2/logout

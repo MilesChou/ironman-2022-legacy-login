@@ -20,3 +20,9 @@ setup:
 
 open:
 	open "http://127.0.0.1:8000/"
+
+login:
+	open "http://127.0.0.1:8000/login"
+
+logout:
+	open "http://127.0.0.1:8000/logout"
