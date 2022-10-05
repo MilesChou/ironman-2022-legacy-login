@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Hydra;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 use Ory\Hydra\Client\Api\AdminApi;
+use Ory\Hydra\Client\Model\AcceptConsentRequest;
 use RuntimeException;
 
 class ConsentProvider
@@ -20,6 +22,24 @@ class ConsentProvider
         $consentRequest = $adminApi->getConsentRequest($consentChallenge);
 
         Log::debug('Get consent Request', json_decode((string)$consentRequest, true));
+
+        if ($consentRequest->getSkip()) {
+            Log::debug('Skip Login Provider');
+
+            $acceptConsentRequest = new AcceptConsentRequest([
+                'grantScope' => $consentRequest->getRequestedScope(),
+            ]);
+
+            try {
+                $completedRequest = $adminApi->acceptConsentRequest($consentChallenge, $acceptConsentRequest);
+            } catch (\Throwable $e) {
+                throw new RuntimeException('Hydra Server error: ' . $e->getMessage());
+            }
+
+            Log::debug('Consent Completed Request', json_decode((string)$completedRequest, true));
+
+            return Redirect::away($completedRequest->getRedirectTo());
+        }
 
         return view('auth.consent', [
             'challenge' => $consentChallenge,

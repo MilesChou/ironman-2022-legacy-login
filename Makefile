@@ -16,7 +16,33 @@ setup:
 			--response-types "code,token,id_token,token code,code id_token,id_token token,id_token token code" \
 			--scope openid \
 			--token-endpoint-auth-method client_secret_basic \
-			--callbacks http://127.0.0.1:8000/callback
+			--callbacks http://127.0.0.1:8000/callback \
+			--post-logout-callbacks "http://127.0.0.1:8000/logout/callback"
+	hydra --endpoint http://127.0.0.1:4445/ clients --skip-tls-verify \
+		create \
+			--id rp1 \
+			--secret secret1 \
+			--grant-types authorization_code,implicit,client_credentials,refresh_token \
+			--response-types "code,token,id_token,token code,code id_token,id_token token,id_token token code" \
+			--scope openid \
+			--token-endpoint-auth-method client_secret_basic \
+			--callbacks http://127.0.0.1:8000/rp1/callback \
+			--post-logout-callbacks "http://127.0.0.1:8000/rp1/logout/callback"
+	hydra --endpoint http://127.0.0.1:4445/ clients --skip-tls-verify \
+		create \
+			--id rp2 \
+			--secret secret2 \
+			--grant-types authorization_code,implicit,client_credentials,refresh_token \
+			--response-types "code,token,id_token,token code,code id_token,id_token token,id_token token code" \
+			--scope openid \
+			--token-endpoint-auth-method client_secret_basic \
+			--callbacks http://127.0.0.1:8000/rp2/callback \
+			--post-logout-callbacks "http://127.0.0.1:8000/rp2/logout/callback"
+
+teardown:
+	hydra --endpoint http://127.0.0.1:4445/ clients delete my-rp
+	hydra --endpoint http://127.0.0.1:4445/ clients delete rp1
+	hydra --endpoint http://127.0.0.1:4445/ clients delete rp2
 
 open:
 	open "http://127.0.0.1:8000/"
@@ -26,3 +52,15 @@ login:
 
 logout:
 	open "http://127.0.0.1:8000/logout"
+
+login-rp1:
+	open "http://127.0.0.1:8000/rp1/login"
+
+logout-rp1:
+	open "http://127.0.0.1:8000/rp1/logout"
+
+login-rp2:
+	open "http://127.0.0.1:8000/rp2/login"
+
+logout-rp2:
+	open "http://127.0.0.1:8000/rp2/logout"

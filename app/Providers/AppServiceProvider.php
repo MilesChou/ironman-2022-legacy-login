@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(ClaimCheckerManagerFactory::class, function () {
             return tap(new ClaimCheckerManagerFactory(), function (ClaimCheckerManagerFactory $instance) {
-                $instance->add('aud', new AudienceChecker('my-rp'));
+                // $instance->add('aud', new AudienceChecker('my-rp'));
                 $instance->add('exp', new ExpirationTimeChecker(10));
                 $instance->add('iat', new IssuedAtChecker(10));
                 $instance->add('iss', new IssuerChecker(['http://127.0.0.1:4444/']));
