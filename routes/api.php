@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Rp1\LogoutBackChannel as Rp1LogoutBackChannel;
+use App\Http\Controllers\Rp2\LogoutBackChannel as Rp2LogoutBackChannel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/rp1/logout/backchannel', Rp1LogoutBackChannel::class)->name('rp1.logout.backchannel');
+Route::post('/rp2/logout/backchannel', Rp2LogoutBackChannel::class)->name('rp2.logout.backchannel');

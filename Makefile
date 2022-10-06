@@ -27,7 +27,9 @@ setup:
 			--scope openid \
 			--token-endpoint-auth-method client_secret_basic \
 			--callbacks http://127.0.0.1:8000/rp1/callback \
-			--post-logout-callbacks "http://127.0.0.1:8000/rp1/logout/callback"
+			--post-logout-callbacks "http://127.0.0.1:8000/rp1/logout/callback" \
+			--backchannel-logout-callback "http://127.0.0.1:8000/api/rp1/logout/backchannel" \
+			--backchannel-logout-session-required true
 	hydra --endpoint http://127.0.0.1:4445/ clients --skip-tls-verify \
 		create \
 			--id rp2 \
@@ -37,7 +39,9 @@ setup:
 			--scope openid \
 			--token-endpoint-auth-method client_secret_basic \
 			--callbacks http://127.0.0.1:8000/rp2/callback \
-			--post-logout-callbacks "http://127.0.0.1:8000/rp2/logout/callback"
+			--post-logout-callbacks "http://127.0.0.1:8000/rp2/logout/callback" \
+			--backchannel-logout-callback "http://127.0.0.1:8000/api/rp2/logout/backchannel"
+#			--backchannel-logout-session-required true
 
 teardown:
 	hydra --endpoint http://127.0.0.1:4445/ clients delete my-rp
