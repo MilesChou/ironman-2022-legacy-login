@@ -8,14 +8,13 @@ use Illuminate\Support\Facades\Log;
 use Jose\Component\Checker\ClaimCheckerManagerFactory;
 use Jose\Component\Core\JWK;
 use Jose\Component\Signature\JWSLoader;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Api\PublicApi;
+use Ory\Hydra\Client\Api\OAuth2Api;
 
 class Callback
 {
     public function __invoke(
         Request $request,
-        PublicApi $public,
+        OAuth2Api $public,
         JWK $jwk,
         JWSLoader $loader,
         ClaimCheckerManagerFactory $claimCheckerManagerFactory,
@@ -36,7 +35,7 @@ class Callback
             ->setPassword('secret1');
 
         try {
-            $tokenResponse = $public->oauth2Token(
+            $tokenResponse = $public->oauth2TokenExchange(
                 grantType: 'authorization_code',
                 code: $request->input('code'),
                 redirectUri: $redirectUri

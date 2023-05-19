@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Ory\Hydra\Client\Api\AdminApi;
+use Ory\Hydra\Client\Api\OAuth2Api;
 
 /**
  * 檢查 Token
@@ -14,7 +14,7 @@ class OAuth2TokenIntrospect extends Command
 
     protected $description = 'Introspect OAuth 2.0 Token by Admin API';
 
-    public function handle(AdminApi $admin): int
+    public function handle(OAuth2Api $admin): int
     {
         $token = $this->argument('token');
 

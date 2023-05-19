@@ -32,5 +32,22 @@ php artisan serve
 Hydra 的啟動方法如下：
 
 ```
+# 建資料表
+hydra migrate sql -c hydra.yml -e --yes
+
+# 啟動服務
 hydra serve all -c hydra.yml --dangerous-force-http
+```
+
+最後最麻煩的事，要建 OAuth 2 Client：
+
+```
+make setup
+```
+
+產出來的 client_id 與 client_secret 會是亂數，無法控制，因此最後必須手動把這兩個值放入 .env 最下面的兩個參數：
+
+```
+HYDRA_CLIENT_ID=
+HYDRA_CLIENT_SECRET=
 ```

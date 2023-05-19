@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Hydra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Ory\Hydra\Client\Api\AdminApi;
+use Ory\Hydra\Client\Api\OAuth2Api;
 use RuntimeException;
 use Throwable;
 
 class LogoutProvider
 {
-    public function __invoke(Request $request, AdminApi $adminApi)
+    public function __invoke(Request $request, OAuth2Api $hydra)
     {
         $logoutChallenge = $request->get('logout_challenge');
 
@@ -20,7 +20,7 @@ class LogoutProvider
         }
 
         try {
-            $logoutRequest = $adminApi->getLogoutRequest($logoutChallenge);
+            $logoutRequest = $hydra->getOAuth2LogoutRequest($logoutChallenge);
         } catch (Throwable $e) {
             throw new RuntimeException('Hydra Server error: ' . $e->getMessage());
         }
@@ -28,7 +28,7 @@ class LogoutProvider
         Log::debug('Logout Request', json_decode((string)$logoutRequest, true));
 
         try {
-            $completedRequest = $adminApi->acceptLogoutRequest($logoutChallenge);
+            $completedRequest = $hydra->acceptOAuth2LogoutRequest($logoutChallenge);
         } catch (Throwable $e) {
             throw new RuntimeException('Hydra Server error: ' . $e->getMessage());
         }

@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Api\PublicApi;
+use Ory\Hydra\Client\Api\OAuth2Api;
 
 /**
  * Revoke Token
@@ -15,7 +14,7 @@ class OAuth2TokenRevoke extends Command
 
     protected $description = 'Revoke OAuth 2.0 Token by Public API';
 
-    public function handle(PublicApi $public): int
+    public function handle(OAuth2Api $public): int
     {
         $token = $this->argument('token');
 

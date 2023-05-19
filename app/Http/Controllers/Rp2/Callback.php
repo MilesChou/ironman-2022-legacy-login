@@ -8,14 +8,13 @@ use Illuminate\Support\Facades\Log;
 use Jose\Component\Checker\ClaimCheckerManagerFactory;
 use Jose\Component\Core\JWK;
 use Jose\Component\Signature\JWSLoader;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Api\PublicApi;
+use Ory\Hydra\Client\Api\OAuth2Api;
 
 class Callback
 {
     public function __invoke(
         Request $request,
-        PublicApi $hydra,
+        OAuth2Api $hydra,
         JWK $jwk,
         JWSLoader $loader,
         ClaimCheckerManagerFactory $claimCheckerManagerFactory,

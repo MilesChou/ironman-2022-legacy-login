@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Api\PublicApi;
+use Illuminate\Support\Facades\Http;
+use Ory\Hydra\Client\Api\OAuth2Api;
 
 /**
  * 透過 Client Credentials Grant 產生 Token
@@ -15,20 +15,26 @@ class OAuth2Token extends Command
 
     protected $description = 'Generate OAuth 2.0 by Client Credentials Grant';
 
-    public function handle(PublicApi $hydra, AdminApi $admin): int
+    public function handle(OAuth2Api $hydra): int
     {
-        $tokenResponse = $hydra->oauth2Token('client_credentials');
+        $tokenEndpoint = 'http://127.0.0.1:4444/oauth2/token';
+
+        $tokenResponse = Http::asForm()
+            ->withBasicAuth(config('hydra.client_id'), config('hydra.client_secret'))
+            ->post($tokenEndpoint, [
+                'grant_type' => 'client_credentials',
+            ]);
 
         if ($this->option('debug')) {
             dump($tokenResponse);
         }
 
-        $token = $tokenResponse->getAccessToken();
+        $token = $tokenResponse->json('access_token');
 
         $this->line($token);
 
         if ($this->option('introspect')) {
-            dump($admin->introspectOAuth2Token($token));
+            dump($hydra->introspectOAuth2Token($token));
         }
 
         return 0;

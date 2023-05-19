@@ -6,13 +6,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Model\RejectRequest;
+use Ory\Hydra\Client\Api\OAuth2Api;
+use Ory\Hydra\Client\Model\RejectOAuth2Request;
 use RuntimeException;
 
 class RejectConsent
 {
-    public function __invoke(Request $request, AdminApi $adminApi): RedirectResponse
+    public function __invoke(Request $request, OAuth2Api $hydra): RedirectResponse
     {
         $consentChallenge = $request->input('challenge');
 
@@ -20,7 +20,7 @@ class RejectConsent
             throw new RuntimeException('No consent_challenge');
         }
 
-        $rejectRequest = new RejectRequest([
+        $rejectRequest = new RejectOAuth2Request([
             'error' => 'access_denied',
             'errorDescription' => 'The request was rejected by end-user',
         ]);
@@ -28,7 +28,7 @@ class RejectConsent
         Log::debug('Reject consent Request', json_decode((string)$rejectRequest, true));
 
         try {
-            $completedRequest = $adminApi->rejectConsentRequest($consentChallenge, $rejectRequest);
+            $completedRequest = $hydra->rejectOAuth2ConsentRequest($consentChallenge, $rejectRequest);
         } catch (\Throwable $e) {
             throw new RuntimeException('Hydra Server error: ' . $e->getMessage());
         }

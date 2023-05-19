@@ -14,7 +14,7 @@ class HydraLogin
         $authorizeUri = 'http://127.0.0.1:4444/oauth2/auth';
 
         $query = Arr::query([
-            'client_id' => 'my-rp',
+            'client_id' => config('hydra.client_id'),
             'redirect_uri' => 'http://127.0.0.1:8000/callback',
             'scope' => 'openid',
             'response_type' => 'code',

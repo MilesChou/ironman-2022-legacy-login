@@ -6,13 +6,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Model\AcceptConsentRequest;
+use Ory\Hydra\Client\Api\OAuth2Api;
+use Ory\Hydra\Client\Model\AcceptOAuth2ConsentRequest;
 use RuntimeException;
 
 class AcceptConsent
 {
-    public function __invoke(Request $request, AdminApi $adminApi): RedirectResponse
+    public function __invoke(Request $request, OAuth2Api $hydra): RedirectResponse
     {
         $consentChallenge = $request->input('challenge');
 
@@ -27,7 +27,7 @@ class AcceptConsent
             return Redirect::back();
         }
 
-        $acceptConsentRequest = new AcceptConsentRequest([
+        $acceptConsentRequest = new AcceptOAuth2ConsentRequest([
             'grantScope' => array_keys($scopes),
             'remember' => true,
             'rememberFor' => 120,
@@ -36,9 +36,8 @@ class AcceptConsent
         Log::debug('Accept consent Request', json_decode((string)$acceptConsentRequest, true));
 
         try {
-            $completedRequest = $adminApi->acceptConsentRequest($consentChallenge, $acceptConsentRequest);
+            $completedRequest = $hydra->acceptOAuth2ConsentRequest($consentChallenge, $acceptConsentRequest);
         } catch (\Throwable $e) {
-            dd($e);
             throw new RuntimeException('Hydra Server error: ' . $e->getMessage());
         }
 

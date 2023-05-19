@@ -6,18 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Jose\Component\Checker\ClaimCheckerManagerFactory;
-use Jose\Component\Core\JWK;
+use Jose\Component\Core\JWKSet;
 use Jose\Component\Signature\JWSLoader;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Api\PublicApi;
+use Ory\Hydra\Client\Api\OAuth2Api;
 
 class HydraCallback
 {
     public function __invoke(
         Request $request,
-        PublicApi $hydra,
-        AdminApi $admin,
-        JWK $jwk,
+        OAuth2Api $hydra,
+        JWKSet $jwkSet,
         JWSLoader $loader,
         ClaimCheckerManagerFactory $claimCheckerManagerFactory,
     ) {
@@ -32,37 +30,47 @@ class HydraCallback
 
         $redirectUri = 'http://127.0.0.1:8000/callback';
 
+        $tokenEndpoint = 'http://127.0.0.1:4444/oauth2/token';
+
         try {
-            $tokenResponse = $hydra->oauth2Token(
-                grantType: 'authorization_code',
-                code: $request->input('code'),
-                redirectUri: $redirectUri
-            );
+            $tokenResponse = Http::asForm()
+                ->withBasicAuth(config('hydra.client_id'), config('hydra.client_secret'))
+                ->post($tokenEndpoint, [
+                    'grant_type' => 'authorization_code',
+                    'code' => $request->input('code'),
+                    'redirect_uri' => $redirectUri,
+                ]);
+
+            if ($tokenResponse->status() !== 200) {
+                dd($tokenResponse->json());
+            }
         } catch (\Throwable $e) {
             dump($e);
             return response('請求 Token 失敗');
         }
 
-        Log::debug('Token Response: ', json_decode((string)$tokenResponse, true));
+        Log::debug('Token Response: ', $tokenResponse->json());
 
         dump(json_decode((string)$tokenResponse, true));
 
-        $userinfoEndpoint = $hydra->getConfig()->getHost() . '/userinfo';
+        $accessToken = $tokenResponse->json('access_token');
+        $idToken = $tokenResponse->json('id_token');
 
-        $userInfo = Http::withToken($tokenResponse->getAccessToken())
+        $userinfoEndpoint = 'http://127.0.0.1:4444/userinfo';
+
+        $userInfo = Http::withToken($accessToken)
             ->get($userinfoEndpoint);
 
         Log::debug('User info: ', $userInfo->json());
 
-        $introspectToken = $admin->introspectOAuth2Token($tokenResponse->getAccessToken());
+        $introspectToken = $hydra->introspectOAuth2Token($accessToken);
 
         Log::debug('Token Introspection: ', json_decode((string)$introspectToken, true));
 
-        $idToken = $tokenResponse->getIdToken();
 
-        $jws = $loader->loadAndVerifyWithKey($idToken, $jwk, $signature);
+        $jws = $loader->loadAndVerifyWithKeySet($idToken, $jwkSet, $signature);
 
-        $claimCheckerManager = $claimCheckerManagerFactory->create(['aud', 'exp', 'iat', 'iss']);
+        $claimCheckerManager = $claimCheckerManagerFactory->create(['exp', 'iat', 'iss']);
 
         $claimCheckerManager->check(json_decode($jws->getPayload(), true));
 

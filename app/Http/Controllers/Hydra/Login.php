@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Ory\Hydra\Client\Api\AdminApi;
-use Ory\Hydra\Client\Model\AcceptLoginRequest;
+use Ory\Hydra\Client\Api\OAuth2Api;
+use Ory\Hydra\Client\Model\AcceptOAuth2LoginRequest;
 use RuntimeException;
 use stdClass;
 
 class Login
 {
-    public function __invoke(Request $request, AdminApi $adminApi)
+    public function __invoke(Request $request, OAuth2Api $hydra)
     {
         $loginChallenge = $request->input('challenge');
 
@@ -30,14 +30,14 @@ class Login
 //            'error_description' => '...',
 //        ]);
 //
-//        $completedRequest = $adminApi->acceptLoginRequest($loginChallenge, $rejectRequest);
+//        $completedRequest = $hydra->acceptLoginRequest($loginChallenge, $rejectRequest);
 //
 //        return Redirect::away($completedRequest->getRedirectTo());
         }
 
         $user = Auth::user();
 
-        $acceptLoginRequest = new AcceptLoginRequest([
+        $acceptLoginRequest = new AcceptOAuth2LoginRequest([
             'context' => new stdClass(),
             'remember' => $request->boolean('remember'),
             'rememberFor' => 0,
@@ -47,7 +47,7 @@ class Login
         Log::debug('Accept Login Request: ', json_decode((string)$acceptLoginRequest, true));
 
         try {
-            $completedRequest = $adminApi->acceptLoginRequest($loginChallenge, $acceptLoginRequest);
+            $completedRequest = $hydra->acceptOAuth2LoginRequest($loginChallenge, $acceptLoginRequest);
         } catch (\Throwable $e) {
             throw new RuntimeException('Hydra Server error: ' . $e->getMessage());
         }
